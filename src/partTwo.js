@@ -70,11 +70,10 @@ const handleFailure = (type) => {
 };
 
 const handleSuccess = (type) => {
-  // Only increment stars if there was no previous failed attempt for this type
   if (!attempted[type]) {
     setStars((prevStars) => Math.min(prevStars + 1, 5));
 
-    // Now mark the type as attempted regardless of previous attempts
+
     setAttempted((prevAttempted) => ({ ...prevAttempted, [type]: true }));
   }
 };
