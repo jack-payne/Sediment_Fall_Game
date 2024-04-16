@@ -1,0 +1,46 @@
+
+.App {
+  background-color: #27412f;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%; 
+  gap: 20px; 
+  
+}
+
+.sediment-counts{
+  display:flex;
+  flex-direction: row;
+  gap: 30px;
+  
+}
+.align{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.game-title {
+  font-size: 48px; /* Big title */
+  margin-right: 20px; /* Add some space between the title and the canvas */
+}
+
+.Gamecanvas {
+  max-height: 80vh; /* Example: Limit canvas height */
+  max-width: 80vw; /* Limit canvas width to maintain aspect ratio */
+}
+
