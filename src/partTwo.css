@@ -1,0 +1,203 @@
+.partTwo{
+    background-color: #27412f;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* This centers the contentContainer */
+    justify-content: center;
+    min-height: 100vh; 
+    
+
+}
+.storageContainer{
+    position: relative;
+    background-color: rgb(81, 80, 80);
+    width: 90px;
+    height: 150px;
+    margin-bottom: 40px;
+    z-index:3;
+}
+
+.sedimentCount {
+    margin-bottom: 40px; 
+    background-color: rgb(27, 20, 20);
+    z-index:1;
+    color:rgb(27, 20, 20);
+    border-radius: 15;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+
+
+.gravel-names {
+    color: #f8f8f2;
+    font-size: calc(4rem * var(--font-size-multiplier));
+    
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-shadow: none; 
+    background: #918f8f;
+    border: 2px solid #f8f8f2;
+    min-height: 30.4px;
+  }
+
+.gravel-final{
+    display:flex;
+    align-items: row;
+    margin-top: 50px;
+    gap:50px;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+  
+  .shaken {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  
+  .gravel-names.matched {
+    background-color: green; 
+}
+
+.gameContainer {
+    position: relative; /* This makes it the positioning context for its children */
+    
+}
+.partTwoCanvas {
+    position: absolute;
+    top: 0;
+    left: 10;
+    pointer-events: 'none';
+    margin-left: 5px;
+    z-index: 0;
+}
+
+.gravel-names {
+  user-select: none;
+}
+
+
+.contentContainer {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  gap: 20px; 
+  z-index:2;
+}
+
+.blocksContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; 
+  position: absolute;
+  top: 225px; 
+  left: 718px; 
+  width: 99px; 
+  height: 16px;
+  font-size: .75rem;
+  gap:42px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.block {
+  padding: 5px;
+  background-color: #545454;
+  text-align: center;
+  border:1px solid black;
+  border-radius: 10%;
+  pointer-events: none;
+}
+
+.textBox {
+  position: absolute;
+  top:80px;
+  left: 200px;
+  width: 350px;
+  height: 180px;
+  border: 4px solid white;
+  padding: 10px;
+  align-items: left;
+  pointer-events: 'none';
+
+}
+.textBox2 {
+  position: absolute;
+  top:180px;
+  left: 1100px;
+  padding: 10px;
+  align-items: left;
+  pointer-events: 'none';
+
+}
+
+.sedimentCount.invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+.popup {
+  position: absolute;
+  top:220px;
+  left: 1100px;
+  padding: 10px;
+  align-items: left;
+  pointer-events: 'none';
+
+}
+.limit-message {
+  position: absolute;
+  top:160px;
+  left: 1100px;
+  padding: 10px;
+  align-items: left;
+  pointer-events: 'none';
+
+}
+
+.shakeButton {
+  background-color: #4CAF50;
+  color: white; 
+  padding: 15px 32px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px; 
+  transition: background-color 0.3s ease;
+}
+
+.shakeButton:hover {
+  background-color: #45a049; 
+}
+
+.shakeButton:focus {
+  outline: none; 
+}
+
+.shakeButton:active {
+  background-color: #327435;
+  
+}
+.sedimentContainer {
+  min-height: 280px; 
+  min-width: 200px;
+ 
+}
+
+.sedimentCountsDisplay{
+  position: absolute;
+    top: 300px;
+    left: 300px;
+    pointer-events: 'none';
+    margin-left: 5px;
+    z-index: 0;
+
+
+}
