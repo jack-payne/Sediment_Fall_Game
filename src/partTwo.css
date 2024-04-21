@@ -2,19 +2,22 @@
     background-color: #27412f;
     display: flex;
     flex-direction: column;
-    align-items: center; /* This centers the contentContainer */
+    align-items: center;
     justify-content: center;
     min-height: 100vh; 
     
 
 }
-.storageContainer{
-    position: relative;
-    background-color: rgb(81, 80, 80);
-    width: 90px;
-    height: 150px;
-    margin-bottom: 40px;
-    z-index:3;
+.storageContainer {
+  position: relative;
+  /* background-color: rgb(188, 179, 179); */
+  width: 120px;
+  height: 150px;
+  margin-bottom: 40px;
+  z-index: 3;
+  background-image: '/bucket.jpg';
+  background-size: cover;
+  background-position: center; 
 }
 
 .sedimentCount {
@@ -50,17 +53,18 @@
     gap:50px;
 }
 
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
+@keyframes rotate180 {
+  from {
+    transform: rotate(0deg);
   }
+  to {
+    transform: rotate(180deg);
+  }
+}
   
-  .shaken {
-    animation: shake 0.5s ease-in-out;
-  }
+.shaken {
+  animation: rotate180 0.5s ease-in-out forwards;
+}
 
   
   .gravel-names.matched {
@@ -68,16 +72,17 @@
 }
 
 .gameContainer {
-    position: relative; /* This makes it the positioning context for its children */
+    position: relative;
     
 }
 .partTwoCanvas {
     position: absolute;
-    top: 0;
-    left: 10;
+    top: 50px;
+    left: 15px;
     pointer-events: 'none';
     margin-left: 5px;
     z-index: 0;
+    /* background-color: #68776d; */
 }
 
 .gravel-names {
@@ -91,6 +96,12 @@
   align-items: start;
   gap: 20px; 
   z-index:2;
+}
+
+.stars {
+  font-size: 32px;
+  color: gold;
+  text-shadow: 0px 0px 5px rgba(0,0,0,0.5);
 }
 
 .blocksContainer {
@@ -131,11 +142,12 @@
 }
 .textBox2 {
   position: absolute;
-  top:180px;
-  left: 1100px;
+  top:70px;
+  left: 1000px;
   padding: 10px;
   align-items: left;
   pointer-events: 'none';
+  font-size: 60px;
 
 }
 
@@ -200,4 +212,16 @@
     z-index: 0;
 
 
+}
+
+.rotate {
+  transition: transform 0.6s ease;
+  transform: rotate(180deg);
+}
+
+.restartButton{
+
+  position: absolute;
+  right: 1400px;
+  top:30px;
 }

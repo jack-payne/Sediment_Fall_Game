@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './partTwo.css';
 import Draggable from 'react-draggable';
-
 function PartTwo() {
     const canvasRef = useRef(null);
+    const [showCorrectPopup, setShowCorrectPopup] = useState(false);
     const location = useLocation();
-  const { sedimentCounts } = location.state || { sedimentCounts: { Gravel: 0, 'Coarse Sand': 0, 'Fine Sand': 0, 'Clay/Silt': 0 } };
+    const [isRotated, setIsRotated] = useState(false);
+    const imagePath = '/bucket.png';
+
+    const [imageLoaded, setImageLoaded] = useState(false);
+  const imageRef = useRef(new Image());
+  const navigate = useNavigate();
+  
+    const { sedimentCounts } = location.state || { sedimentCounts: { Gravel: 0, 'Coarse Sand': 0, 'Fine Sand': 0, 'Clay/Silt': 0 } };
     
     const [shaken, setShaken] = useState(false);
     const sedimentTypes = ['Gravel', 'Coarse Sand', 'Fine Sand', 'Clay/Silt'];
@@ -43,11 +50,35 @@ function PartTwo() {
       return acc;
   }, {}));
 
+  const sedimentColors = {
+    'Gravel': 'rgba(255, 165, 0, 0.8)',      // Orange
+    'Coarse Sand': 'rgba(139, 69, 19, 0.8)', // Brown
+    'Fine Sand': 'rgba(255, 255, 0, 0.8)',   // Yellow
+    'Clay/Silt': 'rgba(173, 216, 230, 0.8)'  // Light Blue
+  };
+  
+
  
 const [showIncorrectPopup, setShowIncorrectPopup] = useState(false);
 const [limitReachedMessage, setLimitReachedMessage] = useState('');
 const [failedAttempts, setFailedAttempts] = useState({});
 const [stars, setStars] = useState(1);
+
+
+const handleRestart = () => {
+  navigate('/game'); 
+};
+
+
+useEffect(() => {
+  const canvas = canvasRef.current;
+  if (!canvas || !imageLoaded) return;
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height); 
+  ctx.drawImage(imageRef.current, 0, 0); 
+}, [imageLoaded]);
+
 
 const handleFailure = (type) => {
   setFailedAttempts((prevAttempts) => {
@@ -72,9 +103,10 @@ const handleFailure = (type) => {
 const handleSuccess = (type) => {
   if (!attempted[type]) {
     setStars((prevStars) => Math.min(prevStars + 1, 5));
-
-
     setAttempted((prevAttempted) => ({ ...prevAttempted, [type]: true }));
+
+    setShowCorrectPopup(true); 
+    setTimeout(() => setShowCorrectPopup(false), 2000); 
   }
 };
 
@@ -129,7 +161,7 @@ const handleDragEnd = (e, data, type) => {
 
     const handleShake = () => {
         setShaken(true);
-    
+
         const canvas = canvasRef.current;
         const newParticles = [];
         for (let i = 0; i < 50; i++) {
@@ -169,9 +201,9 @@ const handleDragEnd = (e, data, type) => {
         const canvasHeight = canvas.height;
 
         const fallLimits = {
-          'Gravel': canvasHeight - 210,
-          'Coarse Sand': canvasHeight - 140,
-          'Fine Sand': canvasHeight - 70,
+          'Gravel': canvasHeight - 215,
+          'Coarse Sand': canvasHeight - 145,
+          'Fine Sand': canvasHeight - 75,
           'Clay/Silt': canvasHeight,
           };
       
@@ -188,7 +220,7 @@ const handleDragEnd = (e, data, type) => {
               particle.visible = false;
             }
             if (particle.visible) {
-              ctx.fillStyle = 'grey'; 
+              ctx.fillStyle = sedimentColors[particle.type];
               ctx.beginPath();
               ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
               ctx.fill();
@@ -218,12 +250,21 @@ const handleDragEnd = (e, data, type) => {
             <p className='textBox'>Press the Shake button to sort the sediments by size, then match them with the correct type. Get all four correct and you win! You lose one star per failed attempt.</p>
             {allMatched && <p className='textBox2'>You Win!</p>}
             {showIncorrectPopup && <div className="popup">Incorrect Match!</div>}
+            {showCorrectPopup && <div className="popup correct-popup">Correct Match!</div>}
             {limitReachedMessage && <div className="limit-message">{limitReachedMessage}</div>}
             <div className="stars">Stars: {'★'.repeat(stars) + '☆'.repeat(5 - stars)}</div>
           <div className="gameContainer">
           
-            <canvas ref={canvasRef} width="80" height="400" className='partTwoCanvas'></canvas>
-            <div className={`storageContainer ${shaken ? 'shaken' : ''}`}></div> 
+            <canvas ref={canvasRef} width="80" height="380" className='partTwoCanvas'></canvas>
+            <div className={`storageContainer ${shaken ? 'shaken' : ''}`} 
+     style={{
+       backgroundImage: `url(${imagePath})`,
+       backgroundSize: 'cover',
+       backgroundRepeat: 'no-repeat',
+       backgroundPosition: 'center',
+       backgroundColor: 'transparent'
+     }}>
+</div>
           </div>
           <div className="contentContainer">
           <div className="sedimentContainer">
@@ -268,6 +309,11 @@ const handleDragEnd = (e, data, type) => {
               </div>
           ))}
       </div>
+    
+           
+            <button className="restartButton" onClick={handleRestart}>Restart</button>  
+            
+        
         </div>
       );
       

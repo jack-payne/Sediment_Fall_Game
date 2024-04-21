@@ -62,6 +62,7 @@ class Sprite {
 function Game() {
   const canvasRef = useRef(null);
   let navigate = useNavigate();
+  const [gameStarted, setGameStarted] = useState(false);
   const playerSprite = useRef(null);
   const squarePosition = useRef({ x: 150, y: 550, size: 50 });
   const [sedimentCounts, setSedimentCounts] = useState({ Gravel: 0, 'Coarse Sand': 0, 'Fine Sand': 0, 'Clay/Silt': 0 });
@@ -71,12 +72,29 @@ function Game() {
 
   const totalSedimentsCaught = Object.values(sedimentCounts).reduce((total, count) => total + count, 0);
 
-  if (totalSedimentsCaught >= 300) {
+  if (totalSedimentsCaught >= 25) {
     navigate('/partTwo', { state: { sedimentCounts } });
   }
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    const loadImages = async () => {
+      const srcs = ['./sprites/Dude_Monster_Idle_4.png', './sprites/science_idle.png', './sprites/sciencerun.png', './sprites/sciencerun2.png', './sprites/science_idle_2.png'];
+      await Promise.all(srcs.map(src => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = src;
+        });
+      }));
+      setGameStarted(true);
+    };
+  
+    loadImages();
+  }, []);
+
+  useEffect(() => {
+    if (!canvasRef.current || !gameStarted) return;
     const canvas = canvasRef.current;
     const c = canvas.getContext('2d');
     canvas.width = 700;
@@ -104,16 +122,16 @@ function Game() {
 
     const generateParticles = () => {
       particlesArray = [];
-      for (let i = 0; i < 200; i++) {
+      for (let i = 0; i < 15; i++) {
         const typeIndex = Math.floor(Math.random() * sedimentTypes.length);
         const type = sedimentTypes[typeIndex];
         let size;
         switch (type) {
-          case 'Gravel': size = Math.random() * 4 + 3; break; // Increased size range
-          case 'Coarse Sand': size = Math.random() * 3 + 2; break; // Increased size range
-          case 'Fine Sand': size = Math.random() * 2 + 1.5; break; // Slightly increased size range
-          case 'Clay/Silt': size = Math.random() * 1 + 0.75; break; // Slightly increased size range
-          default: size = Math.random() * 5 + 2; // Default case with increased range
+          case 'Gravel': size = Math.random() * 5 + 3; break;
+          case 'Coarse Sand': size = Math.random() * 7 + 2; break;
+          case 'Fine Sand': size = Math.random() * 9 + 1; break;
+          case 'Clay/Silt': size = Math.random() * 7 + 3; break;
+          default: size = Math.random() * 5 + 2;
         }
         particlesArray.push({
           x: Math.random() * canvas.width,
@@ -135,33 +153,44 @@ function Game() {
            particle.y + particle.size > playerSprite.position.y;
   };
 
-    const animate = () => {
-      requestAnimationFrame(animate);
-      c.clearRect(0, 0, canvas.width, canvas.height);
-      c.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-      updateMovement();
-      playerSprite.update();
-      particlesArray.forEach((particle, index) => {
-        if (!detectCollision(particle)) {
-          c.fillStyle = 'grey';
-          c.beginPath();
-          c.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-          c.fill();
-          particle.y += particle.speed;
-          if (particle.y > canvas.height) {
-            particle.y = 0;
-            particle.x = Math.random() * canvas.width;
-          }
-        } else {
-          setSedimentCounts(prevCounts => ({
-            ...prevCounts,
-            [particle.type]: prevCounts[particle.type] + 1
-          }));
-          particlesArray.splice(index, 1);
+  const animate = () => {
+    if (!gameStarted) return; 
+    requestAnimationFrame(animate);
+    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    playerSprite.update();
+    updateMovement();
+
+    
+    particlesArray.forEach((particle, index) => {
+      if (!detectCollision(particle)) {
+        const colors = {
+          'Gravel': 'rgba(255, 165, 0, 0.8)',
+          'Coarse Sand': 'rgba(139, 69, 19, 0.8)',
+          'Fine Sand': 'rgba(255, 255, 0, 0.8)',
+          'Clay/Silt': 'rgba(173, 216, 230, 0.8)'
+        };
+
+        c.fillStyle = colors[particle.type] || 'rgba(255, 255, 255, 0.8)';
+        c.beginPath();
+        c.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        c.fill();
+        particle.y += particle.speed;
+        if (particle.y > canvas.height) {
+          particle.y = -particle.size;
+          particle.x = Math.random() * canvas.width;
         }
-      });
-      
-    };
+      } else {
+        setSedimentCounts(prevCounts => ({
+          ...prevCounts,
+          [particle.type]: prevCounts[particle.type] + 1
+        }));
+        particle.y = -particle.size;
+        particle.x = Math.random() * canvas.width;
+      }
+    });
+  };
+  
     const updateMovement = () => {
       if (!playerSprite || !canvasRef.current) return;
       let newImageSrc = './sprites/science_idle.png';
@@ -172,11 +201,13 @@ function Game() {
         playerSprite.position.x -= 10; 
         newImageSrc = './sprites/sciencerun2.png'; 
         framesMax = 8; 
+
       } else if (moveRight.current) {
        
         playerSprite.position.x += 10; 
         newImageSrc = './sprites/sciencerun.png'; 
         framesMax = 8;
+       
       } else {
        
         if (lastKeyPressed.current === 'left') {
@@ -198,9 +229,10 @@ function Game() {
     const handleKeyDown = (e) => {
       if (e.key === 'a') {
         moveLeft.current = true;
-       
+        console.log(`Current Image: ${playerSprite.imageSrc}, Frame: ${playerSprite.framesCurrent}`);
       } else if (e.key === 'd') {
         moveRight.current = true;
+        console.log(`Current Image: ${playerSprite.imageSrc}, Frame: ${playerSprite.framesCurrent}`);
         
       }
       
@@ -210,21 +242,14 @@ function Game() {
       if (e.key === 'a') {
         setLastKeyPressed('right');
         moveLeft.current = false;
-        console.log(lastKeyPressed);
+       
       } else if (e.key === 'd') {
         setLastKeyPressed('left');
         moveRight.current = false;
-        console.log(lastKeyPressed);
+        
       }
       
-    };
-
-
-
-    
-
-
-    
+    };    
 
     generateParticles();
     animate();
@@ -237,25 +262,40 @@ function Game() {
       document.removeEventListener('keyup', handleKeyUp);
       
     };
-  }, []);
+  }, [gameStarted]);
+
+  const handleStart = () => {
+    setGameStarted(true);
+  };
 
 
   return (
     <div className="App">
-      <div className="App-header">
-      <h1 className="game-title">Sediment Catcher</h1>
-      <div className="align">
-        <canvas ref={canvasRef} className='Gamecanvas'></canvas>
-        <div className="sediment-counts">
-          {Object.entries(sedimentCounts).map(([type, count]) => (
-            <p key={type}>{type}: {count}</p>
-          ))}
-          <p>Collect 300 to progress!!</p>
+      {!gameStarted ? (
+        <>
+          <div className="instructions">
+            <p>Welcome to Sediment Catcher!</p>
+            <p>Move your character left or right using 'A' and 'D' keys to catch falling sediments. All sediments give you points. Collect 25 points to progress to the next part of the game.</p>
+          </div>
+          <button onClick={handleStart} className="start-button">Start Game</button>
+        </>
+      ) : (
+        <div className="App-header">
+          <h1 className="game-title">Sediment Catcher</h1>
+          <div className="align">
+            <canvas ref={canvasRef} className="Gamecanvas"></canvas>
+            <div className="sediment-counts">
+              {Object.entries(sedimentCounts).map(([type, count]) => (
+                <p key={type}>{type}: {count}</p>
+              ))}
+              <p>Collect 300 to progress!!</p>
+            </div>
+          </div>
         </div>
-      </div>
-      </div>
+      )}
     </div>
   );
+  
 }
 
 export default Game;

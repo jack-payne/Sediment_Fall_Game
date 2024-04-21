@@ -9,6 +9,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Game />} />  // Set Game as the default component
         <Route path="/partTwo" element={<PartTwo />} />
+        <Route path="/game" element={<Game />} />
+       
       </Routes>
     </div>
   );
